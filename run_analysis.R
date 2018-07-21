@@ -45,17 +45,17 @@ if (!file.exists(dataPath)) {
 mergeData <- mergeData[, columnsToKeep]
 
 # replace activity values with named factor levels
-mergeData$activity <- factor(humanActivity$activity, 
-                                 levels = activities[, 1], labels = activities[, 2])
+mergeData$activity <- factor(mergeData$activity, 
+                                 levels = act[, 1], labels = act[, 2])
 
 #Clean up Column Names
-# get column names
+
 humanActivityCols <- colnames(mergeData)
 
-# remove special characters
+
 humanActivityCols <- gsub("[\\(\\)-]", "", humanActivityCols)
 
-# expand abbreviations and clean up names
+
 humanActivityCols <- gsub("^f", "frequencyDomain", humanActivityCols)
 humanActivityCols <- gsub("^t", "timeDomain", humanActivityCols)
 humanActivityCols <- gsub("Acc", "Accelerometer", humanActivityCols)
@@ -65,17 +65,15 @@ humanActivityCols <- gsub("Freq", "Frequency", humanActivityCols)
 humanActivityCols <- gsub("mean", "Mean", humanActivityCols)
 humanActivityCols <- gsub("std", "StandardDeviation", humanActivityCols)
 
-# correct typo
+# Correct typo
 humanActivityCols <- gsub("BodyBody", "Body", humanActivityCols)
 
-# use new labels as column names
+# Use new labels as column names
 colnames(mergeData) <- humanActivityCols
 
-# group by subject and activity and summarise using mean
-DataMeans <- mergeData %>% 
-    group_by(subject, activity) %>%
-    summarise_each(funs(mean))
+# Group by subject and activity and summarise using mean
+DataMeans <- mergeData %>% group_by(subject, act) %>%  summarise_each(funs(mean))
 
-# output to file "tidy_data.txt"
+# Output to file "tidy_data.txt"
 write.table(DataMeans, "tidy_data.txt", row.names = FALSE, 
             quote = FALSE)
